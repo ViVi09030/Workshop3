@@ -1,9 +1,46 @@
+# Variables de entorno
 /openAI.env
-/DjangoProjectBase2/*
-/TutorialGoogle/*
-/movie_pictures/*
-/open_ai_api_keys.env
-/.env
-/*.env
-/images.zip
-/DjangoProjectBase/openAI.env
+*.env
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Entornos virtuales
+venv/
+env/
+ENV/
+.venv/
+
+# Dependencias / builds
+*.egg-info/
+dist/
+build/
+
+# Base de datos (Django)
+db.sqlite3
+*.sqlite3
+
+# Archivos media (uploads)
+media/
+
+# Archivos estáticos recolectados
+staticfiles/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Archivos sensibles
+*.pem
+*.key
