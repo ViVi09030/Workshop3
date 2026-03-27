@@ -8,6 +8,11 @@ import matplotlib
 import io
 import urllib, base64
 
+import os
+import numpy as np
+from dotenv import load_dotenv
+from openai import OpenAI
+
 def home(request):
     #return HttpResponse('<h1>Welcome to Home Page</h1>')
     #return render(request, 'home.html')
@@ -123,3 +128,51 @@ def generate_bar_chart(data, xlabel, ylabel):
     buffer.close()
     graphic = base64.b64encode(image_png).decode('utf-8')
     return graphic
+
+def recommend_movie(request):
+    prompt = request.GET.get('prompt', '')
+    recommended_movie = None
+    similarity_score = None
+    error_message = None
+
+    if prompt:
+        try:
+            load_dotenv('./openAI.env')
+            client = OpenAI(api_key=os.environ.get('openai_apikey'))
+
+            response = client.embeddings.create(
+                input=[prompt],
+                model="text-embedding-3-small"
+            )
+
+            prompt_emb = np.array(response.data[0].embedding, dtype=np.float32)
+
+            best_movie = None
+            best_similarity = -1
+
+            for movie in Movie.objects.all():
+                if not movie.emb:
+                    continue
+
+                movie_emb = np.frombuffer(movie.emb, dtype=np.float32)
+
+                similarity = np.dot(prompt_emb, movie_emb) / (
+                    np.linalg.norm(prompt_emb) * np.linalg.norm(movie_emb)
+                )
+
+                if similarity > best_similarity:
+                    best_similarity = similarity
+                    best_movie = movie
+
+            recommended_movie = best_movie
+            similarity_score = best_similarity
+
+        except Exception as e:
+            error_message = str(e)
+
+    return render(request, 'recommendation.html', {
+        'prompt': prompt,
+        'recommended_movie': recommended_movie,
+        'similarity_score': similarity_score,
+        'error_message': error_message,
+    })

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Movie Recommendation System</h1>
+
+    <form method="GET" action="{% url 'recommendation' %}">
+        <div class="mb-3">
+            <label for="prompt" class="form-label">Write a prompt or movie description:</label>
+            <input
+                type="text"
+                class="form-control"
+                id="prompt"
+                name="prompt"
+                value="{{ prompt }}"
+                placeholder="Example: movie about fantasy"
+            >
+        </div>
+        <button type="submit" class="btn btn-primary">Recommend Movie</button>
+    </form>
+
+    <br>
+
+    {% if error_message %}
+        <div class="alert alert-danger">
+            <strong>Error:</strong> {{ error_message }}
+        </div>
+    {% endif %}
+
+    {% if recommended_movie %}
+        <div class="card mt-4" style="width: 22rem;">
+            {% if recommended_movie.image %}
+                <img src="{{ recommended_movie.image.url }}" class="card-img-top" alt="{{ recommended_movie.title }}">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title fw-bold">{{ recommended_movie.title }}</h5>
+                <p class="card-text">{{ recommended_movie.description }}</p>
+                <p class="card-text"><strong>Genre:</strong> {{ recommended_movie.genre }}</p>
+                <p class="card-text"><strong>Year:</strong> {{ recommended_movie.year }}</p>
+                <p class="card-text"><strong>Similarity:</strong> {{ similarity_score|floatformat:4 }}</p>
+
+                {% if recommended_movie.url %}
+                    <a href="{{ recommended_movie.url }}" class="btn btn-primary">Movie Link</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock content %}
